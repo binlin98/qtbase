@@ -67,8 +67,8 @@ void QEglFSVivIntegration::platformInit()
 
     mNativeDisplay = fbGetDisplayByIndex(framebufferIndex());
     fbGetDisplayGeometry(mNativeDisplay, &width, &height);
-    mScreenSize.setHeight(height);
-    mScreenSize.setWidth(width);
+    mScreenSize.setHeight(width);
+    mScreenSize.setWidth(height);
 }
 
 QSize QEglFSVivIntegration::screenSize() const
@@ -85,8 +85,8 @@ EGLNativeWindowType QEglFSVivIntegration::createNativeWindow(QPlatformWindow *wi
 {
     Q_UNUSED(window)
     Q_UNUSED(format)
+    EGLNativeWindowType eglWindow = fbCreateWindow(mNativeDisplay, 0, 0, size.height(), size.width());
 
-    EGLNativeWindowType eglWindow = fbCreateWindow(mNativeDisplay, 0, 0, size.width(), size.height());
     return eglWindow;
 }
 
