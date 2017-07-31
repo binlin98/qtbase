@@ -129,7 +129,7 @@ void QOpenGLCompositor::renderAll(QOpenGLFramebufferObject *fbo)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     const QRect targetWindowRect(QPoint(0, 0), m_targetWindow->geometry().size());
-    glViewport(0, 0, targetWindowRect.width(), targetWindowRect.height());
+    glViewport(0, 0, targetWindowRect.height(), targetWindowRect.width()); //swap width / height
 
     if (!m_blitter.isCreated())
         m_blitter.create();
@@ -223,9 +223,18 @@ void QOpenGLCompositor::render(QOpenGLCompositorWindow *window)
             m_blitter.blit(textureId, target, QOpenGLTextureBlitter::OriginTopLeft);
         } else if (textures->count() == 1) {
             // A regular QWidget window
-            const bool translucent = window->sourceWindow()->requestedFormat().alphaBufferSize() > 0;
+//#if 0
+	//normal
+  //          const bool translucent = window->sourceWindow()->requestedFormat().alphaBufferSize() > 0;
+  //          blend.set(translucent);
+  //          const QMatrix4x4 target = QOpenGLTextureBlitter::targetTransform(textures->geometry(i), targetWindowRect);
+  //          m_blitter.blit(textureId, target, QOpenGLTextureBlitter::OriginTopLeft);
+//#else 
+	// rotate 90
+	const bool translucent = window->sourceWindow()->requestedFormat().alphaBufferSize() > 0;
             blend.set(translucent);
-            const QMatrix4x4 target = QOpenGLTextureBlitter::targetTransform(textures->geometry(i), targetWindowRect);
+            QMatrix4x4 target = QOpenGLTextureBlitter::targetTransform(textures->geometry(i), targetWindowRect);
+            target.rotate(90,0,0,1);
             m_blitter.blit(textureId, target, QOpenGLTextureBlitter::OriginTopLeft);
         } else if (!textures->flags(i).testFlag(QPlatformTextureList::StacksOnTop)) {
             // Texture from an FBO belonging to a QOpenGLWidget
